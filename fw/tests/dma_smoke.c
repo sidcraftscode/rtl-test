@@ -25,7 +25,7 @@ int main(void)
 
     rc = axon_dma_submit(&desc, DESC_BUS_ADDR);
     if (rc == 0)
-        rc = axon_dma_wait(40000);
+        rc = axon_dma_wait(10000);
     printf("transfer len=%u rc=%d\n", (unsigned)desc.len, rc);
     return rc == 0 ? 0 : 1;
 }
