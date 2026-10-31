@@ -21,11 +21,12 @@ int main(void)
         .len      = 69632u,
         .flags    = AXON_DESC_F_LAST | AXON_DESC_F_IRQ,
         .next_idx = 0,
+        .sg_count = 0,
     };
 
     rc = axon_dma_submit(&desc, DESC_BUS_ADDR);
     if (rc == 0)
         rc = axon_dma_wait(10000);
-    printf("transfer len=%u rc=%d\n", (unsigned)desc.len, rc);
+    printf("transfer len=%u rc=%d bytes_done=%u\n", (unsigned)desc.len, rc, (unsigned)axon_dma_bytes_done());
     return rc == 0 ? 0 : 1;
 }
