@@ -33,6 +33,12 @@ module axon_dma_engine (
   logic [31:0] desc_words [0:DESC_WORDS-1];
   logic [31:0] bytes_issued;
 
+  logic [DESC_WORDS*32-1:0] desc_flat;
+  always_comb begin
+    for (int i = 0; i < DESC_WORDS - 1; i++) desc_flat[i*32 +: 32] = desc_words[i];
+    desc_flat[(DESC_WORDS-1)*32 +: 32] = mem_rdata;
+  end
+
   logic beat_valid, buf_full, buf_empty;
   logic [31:0] beat_data;
 
@@ -101,7 +107,7 @@ module axon_dma_engine (
         default: state <= S_IDLE;
       endcase
       if (state == S_FETCH && fetch_pending && fetch_idx == LAST_WORD)
-        desc_q <= {mem_rdata, desc_words[2], desc_words[1], desc_words[0]};
+        desc_q <= desc_flat;
     end
   end
 
