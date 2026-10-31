@@ -105,7 +105,15 @@ module axon_dma_engine (
     end
   end
 
-  assign busy = (state == S_FETCH) || (state == S_RUN) || (state == S_DRAIN);
-  assign done = (state == S_DONE);
+  // Registered so the status bits are glitch-free into the clk_axi synchronizers.
+  always_ff @(posedge clk_core or negedge rst_n) begin
+    if (!rst_n) begin
+      busy <= 1'b0;
+      done <= 1'b0;
+    end else begin
+      busy <= (state == S_FETCH) || (state == S_RUN) || (state == S_DRAIN);
+      done <= (state == S_DONE);
+    end
+  end
 
 endmodule
