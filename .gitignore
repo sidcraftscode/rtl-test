@@ -1,0 +1,3 @@
+.breakspec/out/
+__pycache__/
+*.vcd
