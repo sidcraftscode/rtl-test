@@ -35,10 +35,10 @@ class AxonClient:
         """Run one transfer and return the number of bytes moved."""
         if desc.length <= 0 or desc.length % 4:
             raise ValueError("length must be a positive multiple of 4")
+        tag = self._ring.push(desc)
         for attempt in range(self.retries + 1):
             try:
-                tag = self._ring.push(desc)
                 return self._ring.wait(tag, timeout=self.timeout_s)
             except TimeoutError:
-                log.warning("DMA submit timed out, retrying (%d)", attempt + 1)
+                log.warning("DMA tag %d still running, waiting again (%d)", tag, attempt + 1)
         raise TimeoutError(f"transfer did not complete after {self.retries + 1} attempts")
