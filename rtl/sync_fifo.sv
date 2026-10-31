@@ -21,9 +21,8 @@ module sync_fifo #(
   logic [AW-1:0] wptr, rptr;
   logic [AW:0]   count;
 
-  wire do_wr  = wr_en && (!full || rd_en);
-  wire do_rd  = rd_en && !empty;
-  wire cnt_wr = wr_en && !full;
+  wire do_wr = wr_en && (!full || rd_en);
+  wire do_rd = rd_en && !empty;
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -36,7 +35,7 @@ module sync_fifo #(
         wptr      <= wptr + 1'b1;
       end
       if (do_rd) rptr <= rptr + 1'b1;
-      case ({cnt_wr, do_rd})
+      case ({do_wr, do_rd})
         2'b10:   count <= count + 1'b1;
         2'b01:   count <= count - 1'b1;
         default: count <= count;

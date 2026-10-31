@@ -25,6 +25,7 @@ module axon_regs (
   logic        irq_stat;
   logic        irq_mask;
   logic        done_q;
+  logic [31:0] bytes_done_q;  // captured on DONE: bytes_done is stable once the engine is done
   axon_regs_pkg::status_reg_t status;
 
   assign status = {29'd0, err_sync, done_sync, busy_sync};
@@ -37,10 +38,14 @@ module axon_regs (
       irq_stat    <= 1'b0;
       irq_mask    <= 1'b0;
       done_q      <= 1'b0;
+      bytes_done_q <= '0;
     end else begin
       start_pulse <= 1'b0;
       done_q      <= done_sync;
-      if (done_sync && !done_q) irq_stat <= 1'b1;
+      if (done_sync && !done_q) begin
+        irq_stat     <= 1'b1;
+        bytes_done_q <= bytes_done;
+      end
       if (wr_en) begin
         case (wr_addr)
           ADDR_CTRL: begin
@@ -67,7 +72,7 @@ module axon_regs (
         ADDR_IRQ_MASK:  rd_data <= {31'd0, irq_mask};
         ADDR_CTRL:      rd_data <= ctrl;
         ADDR_STATUS:    rd_data <= status;
-        ADDR_BYTES_DONE: rd_data <= bytes_done;
+        ADDR_BYTES_DONE: rd_data <= bytes_done_q;
         ADDR_DESC_ADDR: rd_data <= desc_addr;
         ADDR_IRQ_STAT:  rd_data <= {31'd0, irq_stat};
         default:        rd_data <= 32'd0;
