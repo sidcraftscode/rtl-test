@@ -5,6 +5,7 @@
 package axon_desc_pkg;
 
   typedef struct packed {
+    logic [31:0] sg_count;  // byte 16: scatter-gather segments that follow
     logic [15:0] next_idx;  // byte 14
     logic [15:0] flags;     // byte 12
     logic [31:0] len;       // byte 8: transfer length in bytes
@@ -12,6 +13,6 @@ package axon_desc_pkg;
     logic [31:0] src_addr;  // byte 0
   } dma_desc_t;
 
-  localparam int DESC_WORDS = 4;  // 128-bit descriptor
+  localparam int DESC_WORDS = 5;  // 160-bit descriptor
 
 endpackage

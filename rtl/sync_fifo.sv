@@ -1,5 +1,7 @@
 // Single-clock FIFO, first-word fall-through.
-// A write is accepted when wr_en && !full. A read is accepted when rd_en && !empty.
+// A write is accepted when wr_en && (!full || rd_en): a full FIFO still takes a
+// write in the same cycle as a read, so back-to-back descriptors never stall.
+// A read is accepted when rd_en && !empty.
 module sync_fifo #(
   parameter int W     = 32,
   parameter int DEPTH = 4
@@ -19,7 +21,7 @@ module sync_fifo #(
   logic [AW-1:0] wptr, rptr;
   logic [AW:0]   count;
 
-  wire do_wr = wr_en && !full;
+  wire do_wr = wr_en && (!full || rd_en);
   wire do_rd = rd_en && !empty;
 
   always_ff @(posedge clk or negedge rst_n) begin

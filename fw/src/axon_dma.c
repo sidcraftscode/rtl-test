@@ -17,10 +17,18 @@ int axon_dma_submit(const struct axon_dma_desc *desc, uint32_t desc_bus_addr)
 {
     if (desc->len == 0 || (desc->len & 3u))
         return AXON_ERR_INVAL;
+    uint32_t ctrl = AXON_CTRL_IRQ_EN | AXON_CTRL_START;
+    if (desc->sg_count)
+        ctrl |= AXON_CTRL_SG_EN;
     axon_mem_write(desc_bus_addr, desc, sizeof *desc);
     axon_write32(AXON_REG_DESC_ADDR, desc_bus_addr);
-    axon_write32(AXON_REG_CTRL, AXON_CTRL_IRQ_EN | AXON_CTRL_START);
+    axon_write32(AXON_REG_CTRL, ctrl);
     return 0;
+}
+
+uint32_t axon_dma_bytes_done(void)
+{
+    return axon_read32(AXON_REG_BYTES_DONE);
 }
 
 int axon_dma_wait(uint32_t max_polls)
