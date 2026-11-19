@@ -48,6 +48,7 @@ module axon_dma_top (
     .busy_sync   (busy_axi),
     .done_sync   (done_axi),
     .err_sync    (err_axi),
+    .bytes_done  (bytes_done),
     .irq         (irq)
   );
 
