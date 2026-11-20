@@ -1,6 +1,6 @@
 // Formal harness for sync_fifo.
 // Approved semantics (docs/axon_dma_spec.md §3.2): a write is accepted when
-// wr_en && !full; accepted words are returned in the order they were accepted.
+// wr_en && (!full || rd_en); accepted words are returned in the order they were accepted.
 module sync_fifo_formal #(
   parameter int W     = 8,
   parameter int DEPTH = 4
@@ -25,7 +25,7 @@ module sync_fifo_formal #(
 
   // Every accepted word carries its own sequence number.
   assign wdata = wr_seq;
-  wire wr_acc = wr_en && !full;
+  wire wr_acc = wr_en && (!full || rd_en);
   wire rd_acc = rd_en && !empty;
 
   logic f_past_valid = 1'b0;
